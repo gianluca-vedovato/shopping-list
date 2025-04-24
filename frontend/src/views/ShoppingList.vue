@@ -172,16 +172,6 @@
 import { ref, onMounted, computed } from 'vue'
 import { useShoppingListStore } from '../stores/shoppingList'
 
-// Import PrimeVue components
-import Button from 'primevue/button'
-import InputText from 'primevue/inputtext'
-import Checkbox from 'primevue/checkbox'
-import Card from 'primevue/card'
-import Badge from 'primevue/badge'
-import ProgressSpinner from 'primevue/progressspinner'
-import Message from 'primevue/message'
-import Divider from 'primevue/divider'
-
 // Initialize the store
 const shoppingList = useShoppingListStore()
 
