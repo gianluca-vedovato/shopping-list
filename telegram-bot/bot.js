@@ -12,6 +12,20 @@ const { exec } = require('child_process');
 // Load environment variables
 dotenv.config();
 
+// Create a simple HTTP server for Render deployment
+const http = require('http');
+const PORT = process.env.PORT || 3000;
+
+const server = http.createServer((req, res) => {
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/plain');
+  res.end('Telegram Bot is running!');
+});
+
+server.listen(PORT, () => {
+  console.log(`HTTP server running on port ${PORT}`);
+});
+
 // Handle Google Cloud credentials from environment variable
 if (process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
   // If the credentials are provided as a JSON string (for Render deployment)
@@ -151,10 +165,11 @@ bot.onText(/\/clear/, async (msg) => {
       axios.delete(`${API_URL}/items/${item._id}`)
     ));
     
-    // React with thumbs up instead of sending a message
-    bot.sendMessage(msg.chat.id, '👍', {
-      reply_to_message_id: msg.message_id
-    });
+    // React with thumbs up emoji
+    bot.setMessageReaction(msg.chat.id, msg.message_id, [{
+      type: 'emoji',
+      emoji: '👍'
+    }]);
   } catch (error) {
     console.error('Error clearing completed items:', error);
     bot.sendMessage(chatId, 'Impossibile cancellare i prodotti completati. Riprova più tardi o usa il sito web: https://alioncingianni-shoppinglist.netlify.app');
@@ -177,10 +192,11 @@ bot.onText(/\/add (.+)/, async (msg, match) => {
       source: 'telegram'
     });
     
-    // React with thumbs up instead of sending a message
-    bot.sendMessage(msg.chat.id, '👍', {
-      reply_to_message_id: msg.message_id
-    });
+    // React with thumbs up emoji
+    bot.setMessageReaction(msg.chat.id, msg.message_id, [{
+      type: 'emoji',
+      emoji: '👍'
+    }]);
   } catch (error) {
     console.error('Error adding item to shopping list:', error);
     bot.sendMessage(chatId, 'Impossibile aggiungere il prodotto alla lista. Riprova più tardi o usa il sito web: https://alioncingianni-shoppinglist.netlify.app');
@@ -208,10 +224,11 @@ bot.on('message', async (msg) => {
         source: 'telegram'
       });
       
-      // React with thumbs up instead of sending a message
-      bot.sendMessage(msg.chat.id, '👍', {
-        reply_to_message_id: msg.message_id
-      });
+      // React with thumbs up emoji
+      bot.setMessageReaction(msg.chat.id, msg.message_id, [{
+        type: 'emoji',
+        emoji: '👍'
+      }]);
     } catch (error) {
       console.error('Error adding item to shopping list:', error);
       bot.sendMessage(chatId, 'Impossibile aggiungere il prodotto alla lista. Riprova più tardi o usa il sito web: https://alioncingianni-shoppinglist.netlify.app');
@@ -249,10 +266,11 @@ bot.on('message', async (msg) => {
       // Clean up the temporary file
       fs.unlinkSync(voiceFilePath);
       
-      // React with thumbs up instead of sending a message
-      bot.sendMessage(msg.chat.id, '👍', {
-        reply_to_message_id: msg.message_id
-      });
+      // React with thumbs up emoji
+      bot.setMessageReaction(msg.chat.id, msg.message_id, [{
+        type: 'emoji',
+        emoji: '👍'
+      }]);
     } catch (error) {
       console.error('Error processing voice message:', error);
       bot.sendMessage(chatId, 'Impossibile elaborare il tuo messaggio vocale. Riprova più tardi o usa il sito web: https://alioncingianni-shoppinglist.netlify.app');
