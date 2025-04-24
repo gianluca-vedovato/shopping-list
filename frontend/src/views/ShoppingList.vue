@@ -1,7 +1,7 @@
 <template>
-  <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl">
+  <div class="max-w-md mx-auto bg-white rounded-xl overflow-hidden md:max-w-2xl" style="box-shadow: var(--shadow-card);">
     <!-- Add new item form with sleek design -->
-    <div class="p-4 bg-gradient-to-r from-primary-500 to-primary-600 shadow-inner">
+    <div class="p-4 bg-gradient-to-r" style="background: linear-gradient(to right, var(--color-primary-500), var(--color-primary-600));">
       <form @submit.prevent="addNewItem" class="flex items-center space-x-2">
         <input 
           v-model="newItemName" 
@@ -44,7 +44,8 @@
       <div v-if="!shoppingList.loading" class="mb-6">
         <div class="flex justify-between items-center mb-3">
           <h2 class="text-lg font-medium text-gray-900">Da comprare</h2>
-          <span class="px-2 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-800">
+          <span class="px-2 py-1 text-xs font-medium" 
+            style="border-radius: 9999px; background-color: var(--color-primary-100); color: var(--color-primary-800)">
             {{ shoppingList.activeItems.length }}
           </span>
         </div>
@@ -56,13 +57,17 @@
           <li 
             v-for="item in shoppingList.activeItems" 
             :key="item._id"
-            class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-150"
+            class="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 transition-colors duration-150" 
+            style="border-radius: 0.5rem; box-shadow: var(--shadow-soft);"
           >
             <div class="flex items-center space-x-3 flex-1 min-w-0">
               <button 
                 @click="toggleItem(item)"
-                class="flex-shrink-0 h-5 w-5 rounded border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                :class="{ 'bg-primary-500 border-primary-500': item.completed }"
+                class="flex-shrink-0 h-5 w-5 rounded border border-gray-300 bg-white focus:outline-none focus:ring-2" 
+                :style="{ 
+                  'background-color': item.completed ? 'var(--color-primary-500)' : 'white',
+                  'border-color': item.completed ? 'var(--color-primary-500)' : '#d1d5db'
+                }"
               >
                 <svg v-if="item.completed" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -72,8 +77,12 @@
               <div class="flex-1 min-w-0">
                 <p class="text-sm font-medium text-gray-900 truncate">{{ item.name }}</p>
                 <span 
-                  class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium mt-1"
-                  :class="getSourceColor(item.source)"
+                  class="inline-flex items-center px-2 py-0.5 text-xs font-medium mt-1"
+                  :style="{
+                    'border-radius': '0.25rem',
+                    'background-color': getSourceBgColor(item.source),
+                    'color': getSourceTextColor(item.source)
+                  }"
                 >
                   {{ item.source }}
                 </span>
@@ -82,7 +91,8 @@
             
             <button 
               @click="deleteItem(item._id)" 
-              class="ml-2 p-1 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors duration-150"
+              class="ml-2 p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors duration-150"
+              style="border-radius: 9999px;"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -108,7 +118,8 @@
       <div v-if="hasCompletedItems && !shoppingList.loading" class="border-t pt-4">
         <div class="flex justify-between items-center mb-3">
           <h2 class="text-lg font-medium text-gray-700">Completati</h2>
-          <span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">
+          <span class="px-2 py-1 text-xs font-medium" 
+            style="border-radius: 9999px; background-color: #f3f4f6; color: #1f2937">
             {{ shoppingList.completedItems.length }}
           </span>
         </div>
@@ -119,12 +130,14 @@
           <li 
             v-for="item in shoppingList.completedItems" 
             :key="item._id"
-            class="flex items-center justify-between p-3 bg-gray-50 rounded-lg opacity-70 hover:opacity-100 transition-all duration-150"
+            class="flex items-center justify-between p-3 bg-gray-50 opacity-70 hover:opacity-100 transition-all duration-150"
+            style="border-radius: 0.5rem; box-shadow: var(--shadow-soft);"
           >
             <div class="flex items-center space-x-3 flex-1 min-w-0">
               <button 
                 @click="toggleItem(item)"
-                class="flex-shrink-0 h-5 w-5 rounded border border-gray-300 bg-primary-500 border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                class="flex-shrink-0 h-5 w-5 rounded border focus:outline-none focus:ring-2"
+                style="background-color: var(--color-primary-500); border-color: var(--color-primary-500);"
               >
                 <svg class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -144,7 +157,8 @@
             
             <button 
               @click="deleteItem(item._id)" 
-              class="ml-2 p-1 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors duration-150"
+              class="ml-2 p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors duration-150"
+              style="border-radius: 9999px;"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -156,7 +170,8 @@
         <!-- Clean, minimal clear button -->
         <button 
           @click="clearCompleted" 
-          class="w-full flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-150"
+          class="w-full flex items-center justify-center space-x-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors duration-150"
+          style="border-radius: 0.5rem;"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -226,19 +241,34 @@ const clearCompleted = async () => {
   }
 }
 
-// Helper function to get source badge color
-const getSourceColor = (source) => {
+// Helper functions for source badge colors
+const getSourceBgColor = (source) => {
   switch (source) {
     case 'web':
-      return 'bg-blue-100 text-blue-800'
+      return '#dbeafe' // blue-100
     case 'telegram':
-      return 'bg-indigo-100 text-indigo-800'
+      return '#e0e7ff' // indigo-100
     case 'telegram-voice':
-      return 'bg-purple-100 text-purple-800'
+      return '#f3e8ff' // purple-100
     case 'google-home':
-      return 'bg-orange-100 text-orange-800'
+      return '#ffedd5' // orange-100
     default:
-      return 'bg-gray-100 text-gray-800'
+      return '#f3f4f6' // gray-100
+  }
+}
+
+const getSourceTextColor = (source) => {
+  switch (source) {
+    case 'web':
+      return '#1e40af' // blue-800
+    case 'telegram':
+      return '#3730a3' // indigo-800
+    case 'telegram-voice':
+      return '#6b21a8' // purple-800
+    case 'google-home':
+      return '#9a3412' // orange-800
+    default:
+      return '#1f2937' // gray-800
   }
 }
 </script>
