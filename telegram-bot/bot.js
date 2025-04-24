@@ -28,8 +28,27 @@ const API_URL = process.env.API_URL || 'http://localhost:3000/api';
 // Authorized user IDs (for security)
 const AUTHORIZED_USERS = process.env.AUTHORIZED_USERS ? process.env.AUTHORIZED_USERS.split(',').map(id => parseInt(id.trim())) : [];
 
-// Create a bot instance
-const bot = new TelegramBot(token, { polling: true });
+// Create a bot instance with polling options
+const bot = new TelegramBot(token, { 
+  polling: {
+    interval: 300,
+    autoStart: true,
+    params: {
+      timeout: 10
+    }
+  }
+});
+
+// Handle polling errors
+bot.on('polling_error', (error) => {
+  // Don't crash on polling conflicts, just log them
+  if (error.code === 'ETELEGRAM' && error.message.includes('terminated by other getUpdates request')) {
+    console.log('Polling conflict detected. Another instance of the bot may be running.');
+    // Optional: You could implement a graceful shutdown here if needed
+  } else {
+    console.error('Polling error:', error);
+  }
+});
 
 // Helper function to check if user is authorized
 const isAuthorized = (userId) => {
