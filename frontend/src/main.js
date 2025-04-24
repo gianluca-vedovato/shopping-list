@@ -1,11 +1,7 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { createRouter, createWebHistory } from 'vue-router'
-import './style.css'
-import PrimeVue from 'primevue/config'
-import 'primevue/resources/themes/lara-light-indigo/theme.css'
-import 'primevue/resources/primevue.min.css'
-import 'primeicons/primeicons.css'
+import './tailwind.css'
 import App from './App.vue'
 
 // Import views
