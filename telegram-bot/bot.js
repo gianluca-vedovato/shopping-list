@@ -24,19 +24,32 @@ const isAuthorized = (userId) => {
 // Start command
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
-  bot.sendMessage(chatId, 'Welcome to your Shopping List Bot! Send me items to add to your shopping list.');
+  const isGroup = msg.chat.type === 'group' || msg.chat.type === 'supergroup';
+  
+  if (isGroup) {
+    bot.sendMessage(chatId, 'Welcome to your Shopping List Bot! Use /add [item] to add items to your shopping list.');
+  } else {
+    bot.sendMessage(chatId, 'Welcome to your Shopping List Bot! Send me items to add to your shopping list or use /add [item].');
+  }
 });
 
 // Help command
 bot.onText(/\/help/, (msg) => {
   const chatId = msg.chat.id;
-  bot.sendMessage(chatId, 
-    'Shopping List Bot Commands:\n' +
+  const isGroup = msg.chat.type === 'group' || msg.chat.type === 'supergroup';
+  
+  let helpText = 'Shopping List Bot Commands:\n' +
     '/start - Start the bot\n' +
     '/list - Show your current shopping list\n' +
-    '/clear - Clear all completed items\n' +
-    'Just send any text to add it to your shopping list!'
-  );
+    '/clear - Clear all completed items\n';
+  
+  if (isGroup) {
+    helpText += '/add [item] - Add an item to your shopping list\n';
+  } else {
+    helpText += 'Just send any text to add it to your shopping list!\n';
+  }
+  
+  bot.sendMessage(chatId, helpText);
 });
 
 // List command - show current shopping list
@@ -109,10 +122,33 @@ bot.onText(/\/clear/, async (msg) => {
   }
 });
 
-// Handle any text message as an item to add to the shopping list
+// Command to add an item to the shopping list
+bot.onText(/\/add (.+)/, async (msg, match) => {
+  const chatId = msg.chat.id;
+  const itemText = match[1].trim();
+  
+  if (!isAuthorized(msg.from.id)) {
+    return bot.sendMessage(chatId, 'You are not authorized to use this bot.');
+  }
+  
+  try {
+    // Add the item to the shopping list
+    await axios.post(`${API_URL}/items`, {
+      name: itemText,
+      source: 'telegram'
+    });
+    
+    bot.sendMessage(chatId, `Added "${itemText}" to your shopping list! 🛒`);
+  } catch (error) {
+    console.error('Error adding item to shopping list:', error);
+    bot.sendMessage(chatId, 'Failed to add item to your shopping list. Please try again later.');
+  }
+});
+
+// Handle any text message as an item to add to the shopping list (in private chats only)
 bot.on('message', async (msg) => {
-  // Skip commands and non-text messages
-  if (msg.text.startsWith('/') || !msg.text) return;
+  // Skip commands, non-text messages, and group messages
+  if (msg.text.startsWith('/') || !msg.text || msg.chat.type !== 'private') return;
   
   const chatId = msg.chat.id;
   const itemText = msg.text.trim();
