@@ -57,6 +57,10 @@ const itemSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  completedAt: {
+    type: Date,
+    default: null
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -95,12 +99,22 @@ app.post('/api/items', async (req, res) => {
 
 app.put('/api/items/:id', async (req, res) => {
   try {
+    // Prepare update object
+    const updateData = { 
+      completed: req.body.completed,
+      name: req.body.name
+    };
+    
+    // Set completedAt timestamp when marking as completed
+    if (req.body.completed === true) {
+      updateData.completedAt = new Date();
+    } else {
+      updateData.completedAt = null; // Reset if unmarked
+    }
+    
     const item = await Item.findByIdAndUpdate(
       req.params.id,
-      { 
-        completed: req.body.completed,
-        name: req.body.name
-      },
+      updateData,
       { new: true }
     );
     if (!item) return res.status(404).json({ error: 'Item not found' });
@@ -125,6 +139,29 @@ const googleHomeRoutes = require('./google-home');
 
 // Use Google Home routes
 app.use('/api/google-home', googleHomeRoutes);
+
+// Function to clean up completed items older than 1 day
+async function cleanupCompletedItems() {
+  try {
+    const oneDayAgo = new Date();
+    oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+    
+    const result = await Item.deleteMany({
+      completed: true,
+      completedAt: { $lt: oneDayAgo }
+    });
+    
+    if (result.deletedCount > 0) {
+      console.log(`Cleaned up ${result.deletedCount} completed items older than 1 day`);
+    }
+  } catch (err) {
+    console.error('Error cleaning up completed items:', err);
+  }
+}
+
+// Run cleanup on server start and then every hour
+cleanupCompletedItems();
+setInterval(cleanupCompletedItems, 60 * 60 * 1000); // Every hour
 
 // Start the server
 app.listen(PORT, () => {
