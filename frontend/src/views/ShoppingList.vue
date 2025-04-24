@@ -1,20 +1,28 @@
 <template>
-  <div class="max-w-md mx-auto bg-white rounded-xl overflow-hidden md:max-w-2xl" style="box-shadow: var(--shadow-card);">
-    <!-- Add new item form with sleek design -->
-    <div class="p-4 bg-gradient-to-r" style="background: linear-gradient(to right, var(--color-primary-500), var(--color-primary-600));">
-      <form @submit.prevent="addNewItem" class="flex items-center space-x-2">
-        <input 
-          v-model="newItemName" 
-          type="text" 
-          placeholder="Aggiungi un prodotto..." 
-          required
-          class="flex-1 px-4 py-2 rounded-lg border-0 focus:ring-2 focus:ring-white/50 bg-white/90 placeholder-gray-500 text-gray-900"
-          :disabled="isAdding"
-        />
+  <div class="max-w-md mx-auto overflow-hidden md:max-w-xl" style="background-color: var(--color-surface); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg);">
+    <!-- Modern header with gradient background -->
+    <div class="p-5" style="background: linear-gradient(135deg, var(--color-primary-600), var(--color-secondary-600));">
+      <h1 class="text-xl font-bold text-white mb-4">Lista della Spesa</h1>
+      <form @submit.prevent="addNewItem" class="flex items-center gap-2">
+        <div class="relative flex-1">
+          <input 
+            v-model="newItemName" 
+            type="text" 
+            placeholder="Aggiungi un prodotto..." 
+            required
+            class="w-full px-4 py-3 rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-white/30 bg-white/95 placeholder-neutral-400 text-neutral-800 pr-10"
+            :disabled="isAdding"
+            style="box-shadow: var(--shadow-sm);"
+          />
+          <div v-if="isAdding" class="absolute right-3 top-1/2 transform -translate-y-1/2">
+            <div class="w-5 h-5 border-2 rounded-full animate-spin" style="border-color: var(--color-primary-400); border-top-color: transparent;"></div>
+          </div>
+        </div>
         <button 
           type="submit" 
-          class="inline-flex items-center justify-center p-2 rounded-lg bg-white/20 hover:bg-white/30 text-white transition-all duration-200 disabled:opacity-50"
+          class="p-3 rounded-lg bg-white/20 hover:bg-white/30 text-white transition-all duration-200 disabled:opacity-50 flex-shrink-0"
           :disabled="isAdding"
+          style="backdrop-filter: blur(4px); box-shadow: var(--shadow-sm);"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -24,157 +32,181 @@
     </div>
     
     <!-- Content area with modern spacing and design -->
-    <div class="p-4">
-      <!-- Loading state with subtle animation -->
-      <div v-if="shoppingList.loading" class="flex justify-center items-center py-8">
-        <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary-500"></div>
-      </div>
-      
-      <!-- Error message with clean design -->
-      <div v-if="shoppingList.error" class="bg-red-50 border-l-4 border-red-500 p-4 mb-4 rounded">
-        <div class="flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-          <p class="text-red-700">{{ shoppingList.error }}</p>
+    <div class="p-5" style="background-color: var(--color-surface);">
+      <!-- Loading state with modern spinner -->
+      <div v-if="shoppingList.loading && !shoppingList.items.length" class="flex justify-center items-center py-10">
+        <div class="relative h-12 w-12">
+          <div class="absolute top-0 left-0 right-0 bottom-0 animate-ping opacity-75 rounded-full" style="background-color: var(--color-primary-300);"></div>
+          <div class="relative rounded-full h-12 w-12 flex items-center justify-center" style="background-color: var(--color-primary-500);">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+          </div>
         </div>
       </div>
       
-      <!-- Active items section with clean typography -->
-      <div v-if="!shoppingList.loading" class="mb-6">
-        <div class="flex justify-between items-center mb-3">
-          <h2 class="text-lg font-medium text-gray-900">Da comprare</h2>
-          <span class="px-2 py-1 text-xs font-medium" 
-            style="border-radius: 9999px; background-color: var(--color-primary-100); color: var(--color-primary-800)">
+      <!-- Error message with modern design -->
+      <div v-if="shoppingList.error" class="mb-6 p-4 rounded-lg" style="background-color: var(--color-error-50); border-left: 4px solid var(--color-error-500);">
+        <div class="flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor" style="color: var(--color-error-500);">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+          </svg>
+          <p style="color: var(--color-error-600);">{{ shoppingList.error }}</p>
+        </div>
+      </div>
+      
+      <!-- Active items section with modern Material Design styling -->
+      <div v-if="!shoppingList.loading || shoppingList.items.length > 0" class="mb-8">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-medium" style="color: var(--color-neutral-800);">Da comprare</h2>
+          <span class="px-3 py-1 text-xs font-medium" 
+            style="border-radius: var(--radius-full); background-color: var(--color-primary-100); color: var(--color-primary-700);">
             {{ shoppingList.activeItems.length }}
           </span>
         </div>
         
         <ul 
           v-if="shoppingList.activeItems.length > 0" 
-          class="space-y-2"
+          class="space-y-3"
         >
           <li 
             v-for="item in shoppingList.activeItems" 
             :key="item._id"
-            class="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 transition-colors duration-150" 
-            style="border-radius: 0.5rem; box-shadow: var(--shadow-soft);"
+            class="group flex items-center justify-between p-4 transition-all duration-200" 
+            style="background-color: var(--color-surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--color-neutral-200);"
           >
-            <div class="flex items-center space-x-3 flex-1 min-w-0">
+            <div class="flex items-center gap-4 flex-1 min-w-0">
               <button 
                 @click="toggleItem(item)"
-                class="flex-shrink-0 h-5 w-5 rounded border border-gray-300 bg-white focus:outline-none focus:ring-2" 
+                class="relative flex items-center justify-center flex-shrink-0 w-6 h-6 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200" 
                 :style="{ 
                   'background-color': item.completed ? 'var(--color-primary-500)' : 'white',
-                  'border-color': item.completed ? 'var(--color-primary-500)' : '#d1d5db'
+                  'border': item.completed ? 'none' : '2px solid var(--color-neutral-300)',
+                  'box-shadow': item.completed ? 'var(--shadow-sm)' : 'none',
+                  'focus:ring-color': 'var(--color-primary-400)'
                 }"
               >
-                <svg v-if="item.completed" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg v-if="item.completed" class="h-4 w-4 text-white" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                 </svg>
+                <span v-else class="absolute inset-0 rounded-full transform scale-0 group-hover:scale-90 transition-transform duration-200" style="background-color: var(--color-primary-100);"></span>
               </button>
               
               <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-gray-900 truncate">{{ item.name }}</p>
-                <span 
-                  class="inline-flex items-center px-2 py-0.5 text-xs font-medium mt-1"
-                  :style="{
-                    'border-radius': '0.25rem',
-                    'background-color': getSourceBgColor(item.source),
-                    'color': getSourceTextColor(item.source)
-                  }"
-                >
-                  {{ item.source }}
-                </span>
+                <p class="font-medium truncate" style="color: var(--color-neutral-900);">{{ item.name }}</p>
+                <div class="flex items-center mt-1 gap-2">
+                  <span 
+                    class="inline-flex items-center px-2 py-0.5 text-xs font-medium"
+                    :style="{
+                      'border-radius': 'var(--radius-md)',
+                      'background-color': getSourceBgColor(item.source),
+                      'color': getSourceTextColor(item.source)
+                    }"
+                  >
+                    {{ item.source }}
+                  </span>
+                </div>
               </div>
             </div>
             
             <button 
               @click="deleteItem(item._id)" 
-              class="ml-2 p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors duration-150"
-              style="border-radius: 9999px;"
+              class="ml-2 p-2 opacity-0 group-hover:opacity-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              style="border-radius: var(--radius-full); color: var(--color-neutral-400);"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
               </svg>
             </button>
           </li>
         </ul>
         
-        <!-- Empty state with friendly illustration -->
+        <!-- Empty state with modern illustration -->
         <div 
           v-else 
-          class="flex flex-col items-center justify-center py-8 text-center text-gray-500"
+          class="flex flex-col items-center justify-center py-10 text-center"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-          </svg>
-          <p class="text-sm">La tua lista è vuota. Aggiungi qualcosa!</p>
-          <p class="text-xs mt-1 italic">Puoi anche usare Telegram o Google Home</p>
+          <div class="relative w-20 h-20 mb-4">
+            <div class="absolute inset-0 rounded-full opacity-20" style="background-color: var(--color-primary-300);"></div>
+            <div class="absolute inset-2 rounded-full opacity-40" style="background-color: var(--color-primary-400);"></div>
+            <div class="absolute inset-4 rounded-full flex items-center justify-center" style="background-color: var(--color-primary-500);">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd" />
+              </svg>
+            </div>
+          </div>
+          <h3 class="text-lg font-medium mb-1" style="color: var(--color-neutral-700);">Lista vuota</h3>
+          <p class="text-sm" style="color: var(--color-neutral-500);">Aggiungi qualcosa per iniziare la tua lista della spesa</p>
+          <p class="text-xs mt-3 px-4 py-2 rounded-full" style="background-color: var(--color-neutral-100); color: var(--color-neutral-500);">Puoi anche usare Telegram o Google Home</p>
         </div>
       </div>
       
-      <!-- Completed items section with subtle styling -->
-      <div v-if="hasCompletedItems && !shoppingList.loading" class="border-t pt-4">
-        <div class="flex justify-between items-center mb-3">
-          <h2 class="text-lg font-medium text-gray-700">Completati</h2>
-          <span class="px-2 py-1 text-xs font-medium" 
-            style="border-radius: 9999px; background-color: #f3f4f6; color: #1f2937">
+      <!-- Completed items section with modern styling -->
+      <div v-if="hasCompletedItems && !shoppingList.loading" class="pt-4">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-medium" style="color: var(--color-neutral-700);">Completati</h2>
+          <span class="px-3 py-1 text-xs font-medium" 
+            style="border-radius: var(--radius-full); background-color: var(--color-neutral-100); color: var(--color-neutral-600);">
             {{ shoppingList.completedItems.length }}
           </span>
         </div>
         
-        <ul 
-          class="space-y-2 mb-4"
-        >
+        <ul class="space-y-3 mb-5">
           <li 
             v-for="item in shoppingList.completedItems" 
             :key="item._id"
-            class="flex items-center justify-between p-3 bg-gray-50 opacity-70 hover:opacity-100 transition-all duration-150"
-            style="border-radius: 0.5rem; box-shadow: var(--shadow-soft);"
+            class="group flex items-center justify-between p-4 transition-all duration-200" 
+            style="background-color: var(--color-neutral-50); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--color-neutral-200); opacity: 0.8;"
           >
-            <div class="flex items-center space-x-3 flex-1 min-w-0">
+            <div class="flex items-center gap-4 flex-1 min-w-0">
               <button 
                 @click="toggleItem(item)"
-                class="flex-shrink-0 h-5 w-5 rounded border focus:outline-none focus:ring-2"
-                style="background-color: var(--color-primary-500); border-color: var(--color-primary-500);"
+                class="relative flex items-center justify-center flex-shrink-0 w-6 h-6 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200" 
+                style="background-color: var(--color-success-500); border: none; box-shadow: var(--shadow-sm);"
               >
-                <svg class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg class="h-4 w-4 text-white" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                 </svg>
               </button>
               
               <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-gray-500 line-through truncate">{{ item.name }}</p>
-                <span 
-                  class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium mt-1 opacity-70"
-                  :class="getSourceColor(item.source)"
-                >
-                  {{ item.source }}
-                </span>
+                <p class="font-medium truncate line-through" style="color: var(--color-neutral-500);">{{ item.name }}</p>
+                <div class="flex items-center mt-1 gap-2">
+                  <span 
+                    class="inline-flex items-center px-2 py-0.5 text-xs font-medium"
+                    :style="{
+                      'border-radius': 'var(--radius-md)',
+                      'background-color': getSourceBgColor(item.source),
+                      'color': getSourceTextColor(item.source),
+                      'opacity': '0.7'
+                    }"
+                  >
+                    {{ item.source }}
+                  </span>
+                </div>
               </div>
             </div>
             
             <button 
               @click="deleteItem(item._id)" 
-              class="ml-2 p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors duration-150"
-              style="border-radius: 9999px;"
+              class="ml-2 p-2 opacity-0 group-hover:opacity-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              style="border-radius: var(--radius-full); color: var(--color-neutral-400);"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
               </svg>
             </button>
           </li>
         </ul>
         
-        <!-- Clean, minimal clear button -->
+        <!-- Modern clear button with hover effect -->
         <button 
           @click="clearCompleted" 
-          class="w-full flex items-center justify-center space-x-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors duration-150"
-          style="border-radius: 0.5rem;"
+          class="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
+          style="background-color: var(--color-neutral-100); color: var(--color-neutral-700); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
           </svg>
           Cancella completati
         </button>
@@ -270,6 +302,13 @@ const getSourceTextColor = (source) => {
     default:
       return '#1f2937' // gray-800
   }
+}
+
+// Backward compatibility for getSourceColor function
+const getSourceColor = (source) => {
+  // This function is kept for backward compatibility
+  // It returns an empty string as we're now using inline styles instead of classes
+  return ''
 }
 </script>
 
