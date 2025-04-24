@@ -11,7 +11,17 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors());
+// Configure CORS to allow requests from your Netlify domain
+app.use(cors({
+  origin: ['https://alioncingianni-shoppinglist.netlify.app', 'http://localhost:5173'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
+  optionsSuccessStatus: 204
+}));
+
+// Add pre-flight OPTIONS handling
+app.options('*', cors());
+
 app.use(bodyParser.json());
 
 // Connect to MongoDB with improved options
