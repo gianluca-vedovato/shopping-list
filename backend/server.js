@@ -63,7 +63,7 @@ const itemSchema = new mongoose.Schema({
   },
   source: {
     type: String,
-    enum: ['telegram', 'web', 'google-home'],
+    enum: ['telegram', 'telegram-voice', 'web', 'google-home'],
     default: 'web'
   }
 });
