@@ -1,9 +1,4 @@
-/* Tailwind CSS imports */
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
-
-/* Custom styles */
+/* Base styles */
 :root {
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -22,9 +17,9 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
+  font-family: var(--font-family);
+  color: var(--text-color);
+  background-color: var(--surface-ground);
   min-height: 100vh;
 }
 

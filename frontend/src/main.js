@@ -2,6 +2,10 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { createRouter, createWebHistory } from 'vue-router'
 import './style.css'
+import PrimeVue from 'primevue/config'
+import 'primevue/resources/themes/lara-light-green/theme.css'
+import 'primevue/resources/primevue.min.css'
+import 'primeicons/primeicons.css'
 import App from './App.vue'
 
 // Import views
@@ -19,7 +23,8 @@ const router = createRouter({
 const pinia = createPinia()
 
 // Create and mount the app
-const app = createApp(App)
-app.use(pinia)
-app.use(router)
-app.mount('#app')
+createApp(App)
+  .use(pinia)
+  .use(router)
+  .use(PrimeVue, { ripple: true })
+  .mount('#app')

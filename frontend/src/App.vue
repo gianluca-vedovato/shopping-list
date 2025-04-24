@@ -14,32 +14,96 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col bg-gray-50">
+  <div class="layout-wrapper">
     <!-- Header with gradient background -->
-    <header class="bg-gradient-to-r from-primary-600 to-primary-500 text-white py-4 px-4 shadow-md">
-      <div class="container mx-auto flex justify-between items-center">
-        <h1 class="text-2xl font-bold">🛒 Shopping List</h1>
-        <div class="text-sm bg-white/20 px-3 py-1 rounded-full">
+    <header class="app-header">
+      <div class="header-content">
+        <h1><i class="pi pi-shopping-cart"></i> Shopping List</h1>
+        <div class="subtitle">
           Lista della Spesa
         </div>
       </div>
     </header>
     
     <!-- Main content -->
-    <main class="flex-1 container mx-auto px-4 py-6">
+    <main class="app-main">
       <!-- Router view will display the current route component -->
       <router-view />
     </main>
     
     <!-- Footer -->
-    <footer class="bg-secondary-800 text-white text-center py-3 text-sm">
+    <footer class="app-footer">
       <p>Shopping List App © {{ new Date().getFullYear() }}</p>
     </footer>
   </div>
 </template>
 
 <style>
-/* PWA support - make it feel more like a native app */
+/* Base styles */
+body {
+  margin: 0;
+  font-family: var(--font-family);
+  background-color: var(--surface-ground);
+  color: var(--text-color);
+}
+
+/* Layout */
+.layout-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header */
+.app-header {
+  background: linear-gradient(to right, var(--green-600), var(--green-500));
+  color: white;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.subtitle {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+}
+
+/* Main content */
+.app-main {
+  flex: 1;
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Footer */
+.app-footer {
+  background-color: var(--surface-900);
+  color: white;
+  text-align: center;
+  padding: 0.75rem;
+  font-size: 0.875rem;
+}
+
+/* PWA support */
 .pwa-mode {
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
@@ -47,7 +111,7 @@ onMounted(() => {
   padding-right: env(safe-area-inset-right);
 }
 
-/* Custom animations */
+/* Animations */
 @keyframes float {
   0% { transform: translateY(0px); }
   50% { transform: translateY(-10px); }
@@ -56,5 +120,16 @@ onMounted(() => {
 
 .float-animation {
   animation: float 3s ease-in-out infinite;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .app-header h1 {
+    font-size: 1.25rem;
+  }
+  
+  .app-main {
+    padding: 1rem;
+  }
 }
 </style>
