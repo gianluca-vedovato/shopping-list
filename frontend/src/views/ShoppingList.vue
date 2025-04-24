@@ -177,7 +177,7 @@ const addNewItem = async () => {
 
 const toggleItem = async (item) => {
   try {
-    await shoppingList.toggleItem(item._id, !item.completed)
+    await shoppingList.toggleItemStatus(item)
   } catch (error) {
     console.error('Failed to toggle item:', error)
   }
@@ -193,7 +193,7 @@ const deleteItem = async (itemId) => {
 
 const clearCompleted = async () => {
   try {
-    await shoppingList.clearCompleted()
+    await shoppingList.clearCompletedItems()
   } catch (error) {
     console.error('Failed to clear completed items:', error)
   }
