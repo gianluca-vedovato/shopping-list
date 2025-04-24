@@ -132,10 +132,13 @@ bot.onText(/\/clear/, async (msg) => {
       axios.delete(`${API_URL}/items/${item._id}`)
     ));
     
-    bot.sendMessage(chatId, `Cancellati ${completedItems.length} prodotti completati dalla tua lista della spesa.`);
+    // React with thumbs up instead of sending a message
+    bot.sendMessage(msg.chat.id, '👍', {
+      reply_to_message_id: msg.message_id
+    });
   } catch (error) {
     console.error('Error clearing completed items:', error);
-    bot.sendMessage(chatId, 'Impossibile cancellare i prodotti completati. Riprova più tardi.');
+    bot.sendMessage(chatId, 'Impossibile cancellare i prodotti completati. Riprova più tardi o usa il sito web: https://alioncingianni-shoppinglist.netlify.app');
   }
 });
 
@@ -155,10 +158,13 @@ bot.onText(/\/add (.+)/, async (msg, match) => {
       source: 'telegram'
     });
     
-    bot.sendMessage(chatId, `Aggiunto "${itemText}" alla tua lista della spesa! 🛒`);
+    // React with thumbs up instead of sending a message
+    bot.sendMessage(msg.chat.id, '👍', {
+      reply_to_message_id: msg.message_id
+    });
   } catch (error) {
     console.error('Error adding item to shopping list:', error);
-    bot.sendMessage(chatId, 'Impossibile aggiungere il prodotto alla lista. Riprova più tardi.');
+    bot.sendMessage(chatId, 'Impossibile aggiungere il prodotto alla lista. Riprova più tardi o usa il sito web: https://alioncingianni-shoppinglist.netlify.app');
   }
 });
 
@@ -183,16 +189,19 @@ bot.on('message', async (msg) => {
         source: 'telegram'
       });
       
-      bot.sendMessage(chatId, `Aggiunto "${itemText}" alla tua lista della spesa! 🛒`);
+      // React with thumbs up instead of sending a message
+      bot.sendMessage(msg.chat.id, '👍', {
+        reply_to_message_id: msg.message_id
+      });
     } catch (error) {
       console.error('Error adding item to shopping list:', error);
-      bot.sendMessage(chatId, 'Impossibile aggiungere il prodotto alla lista. Riprova più tardi.');
+      bot.sendMessage(chatId, 'Impossibile aggiungere il prodotto alla lista. Riprova più tardi o usa il sito web: https://alioncingianni-shoppinglist.netlify.app');
     }
   }
   // Handle voice messages
   else if (msg.voice) {
     try {
-      bot.sendMessage(chatId, 'Sto elaborando il tuo messaggio vocale...');
+      // No longer send processing message, just silently process
       
       // Get voice file from Telegram
       const fileId = msg.voice.file_id;
@@ -221,10 +230,13 @@ bot.on('message', async (msg) => {
       // Clean up the temporary file
       fs.unlinkSync(voiceFilePath);
       
-      bot.sendMessage(chatId, `Aggiunto "${transcribedText}" alla tua lista della spesa! 🛒`);
+      // React with thumbs up instead of sending a message
+      bot.sendMessage(msg.chat.id, '👍', {
+        reply_to_message_id: msg.message_id
+      });
     } catch (error) {
       console.error('Error processing voice message:', error);
-      bot.sendMessage(chatId, 'Impossibile elaborare il tuo messaggio vocale. Riprova più tardi.');
+      bot.sendMessage(chatId, 'Impossibile elaborare il tuo messaggio vocale. Riprova più tardi o usa il sito web: https://alioncingianni-shoppinglist.netlify.app');
     }
   }
 });
