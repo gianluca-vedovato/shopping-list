@@ -14,10 +14,27 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json());
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/shopping-list')
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('Could not connect to MongoDB', err));
+// Connect to MongoDB with improved options
+const connectWithRetry = () => {
+  console.log('Attempting to connect to MongoDB...');
+  mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/shopping-list', {
+    serverSelectionTimeoutMS: 15000, // Timeout after 15 seconds instead of 30
+    socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+    connectTimeoutMS: 15000, // Give up initial connection after 15 seconds
+    maxPoolSize: 10, // Maintain up to 10 socket connections
+  })
+  .then(() => {
+    console.log('Successfully connected to MongoDB');
+  })
+  .catch(err => {
+    console.error('Failed to connect to MongoDB...', err);
+    console.log('Retrying connection in 5 seconds...');
+    setTimeout(connectWithRetry, 5000); // Retry after 5 seconds
+  });
+};
+
+// Initial connection with retry
+connectWithRetry();
 
 // Define shopping item schema
 const itemSchema = new mongoose.Schema({
