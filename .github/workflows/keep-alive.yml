@@ -1,0 +1,51 @@
+name: Keep Bot Alive
+
+on:
+  schedule:
+    # Runs every 5 minutes
+    - cron: '*/5 * * * *'
+  # Also allows manual triggering
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Bot Service
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const http = require('https');
+            
+            // Replace with your actual bot URL
+            const url = process.env.BOT_URL;
+            
+            if (!url) {
+              console.error('BOT_URL environment variable is not set');
+              process.exit(1);
+            }
+            
+            console.log(`Pinging ${url} to keep bot alive...`);
+            
+            const req = http.get(url, (res) => {
+              console.log(`Status: ${res.statusCode}`);
+              
+              let data = '';
+              res.on('data', (chunk) => {
+                data += chunk;
+              });
+              
+              res.on('end', () => {
+                console.log(`Response: ${data}`);
+                console.log('Ping successful!');
+              });
+            });
+            
+            req.on('error', (error) => {
+              console.error(`Error pinging bot: ${error.message}`);
+              process.exit(1);
+            });
+            
+            req.end();
+        env:
+          BOT_URL: ${{ secrets.BOT_URL }}
